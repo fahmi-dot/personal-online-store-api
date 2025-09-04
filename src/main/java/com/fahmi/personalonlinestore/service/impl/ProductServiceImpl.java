@@ -1,53 +1,67 @@
 package com.fahmi.personalonlinestore.service.impl;
 
+import com.fahmi.personalonlinestore.dto.request.ProductRequest;
+import com.fahmi.personalonlinestore.dto.response.ProductResponse;
 import com.fahmi.personalonlinestore.entity.Category;
 import com.fahmi.personalonlinestore.entity.Product;
-import com.fahmi.personalonlinestore.repository.CategoryRepository;
+import com.fahmi.personalonlinestore.mapper.ProductMapper;
 import com.fahmi.personalonlinestore.repository.ProductRepository;
+import com.fahmi.personalonlinestore.service.CategoryService;
 import com.fahmi.personalonlinestore.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
-    public Product createProduct(Product product, String categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        product.setCategory(category);
-        return productRepository.save(product);
+    @Override
+    public ProductResponse createProduct(ProductRequest request) {
+        Category category = categoryService.getCategoryById(request.getCategoryId());
+        Product product = ProductMapper.fromRequest(request, category);
+
+        productRepository.save(product);
+
+        return ProductMapper.toResponse(product);
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    @Override
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(ProductMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public Product getProductById(String id) {
-        return productRepository.findById(id)
+    @Override
+    public ProductResponse getProductById(String id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        return ProductMapper.toResponse(product);
     }
 
-    public List<Product> getProductsByCategory(String categoryId) {
-        return productRepository.findByCategoryId(categoryId);
-    }
-
-    public Product updateProduct(String id, Product product) {
-        return productRepository.findById(id).map(p -> {
-            p.setName(product.getName());
-            p.setDescription(product.getDescription());
-            p.setPrice(product.getPrice());
-            p.setStock(product.getStock());
-            p.setCategory(product.getCategory());
+    @Override
+    public ProductResponse updateProduct(String id, ProductRequest request) {
+        Category category = categoryService.getCategoryById(id);
+        Product product = productRepository.findById(id).map(p -> {
+            p.setName(request.getName());
+            p.setDescription(request.getDescription());
+            p.setPrice(request.getPrice());
+            p.setStock(request.getStock());
+            p.setCategory(category);
             return productRepository.save(p);
         }).orElseThrow(() -> new RuntimeException("Product not found"));
+
+        return ProductMapper.toResponse(product);
     }
 
+    @Override
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
     }

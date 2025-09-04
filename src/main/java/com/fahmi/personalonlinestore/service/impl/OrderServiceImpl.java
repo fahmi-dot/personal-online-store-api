@@ -1,9 +1,13 @@
 package com.fahmi.personalonlinestore.service.impl;
 
+import com.fahmi.personalonlinestore.dto.request.OrderDetailRequest;
+import com.fahmi.personalonlinestore.dto.request.OrderRequest;
+import com.fahmi.personalonlinestore.dto.response.OrderResponse;
 import com.fahmi.personalonlinestore.entity.Order;
 import com.fahmi.personalonlinestore.entity.OrderDetail;
 import com.fahmi.personalonlinestore.entity.Product;
 import com.fahmi.personalonlinestore.entity.User;
+import com.fahmi.personalonlinestore.mapper.OrderMapper;
 import com.fahmi.personalonlinestore.repository.OrderDetailRepository;
 import com.fahmi.personalonlinestore.repository.OrderRepository;
 import com.fahmi.personalonlinestore.repository.ProductRepository;
@@ -14,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,33 +30,43 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final TokenHolder tokenHolder;
 
+    @Override
     @Transactional
-    public Order createOrder(String id) {
-        User user = userRepository.findById(id)
+    public OrderResponse createOrder(OrderRequest request) {
+        String username = tokenHolder.getUsername();
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
         Order order = Order.builder()
                 .user(user)
                 .status("PENDING")
                 .totalPrice(0.0)
                 .build();
-        return orderRepository.save(order);
+        orderRepository.save(order);
+
+        for (OrderDetailRequest item : request.getItem()) {
+            addProductToOrder(order.getId(), item.getProductId(), item.getQuantity());
+        }
+
+        return OrderMapper.toResponse(order);
     }
 
-    public Order getOrderById(String id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-    }
-
-    public List<Order> getMyOrders() {
+    @Override
+    public List<OrderResponse> getMyOrders() {
         String username = tokenHolder.getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return orderRepository.findByUserId(user.getId());
+
+        return orderRepository.findByUserId(user.getId()).stream()
+                .map(OrderMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
-    public Order addProductToOrder(String id, String productId, int quantity) {
-        Order order = getOrderById(id);
+    public OrderResponse addProductToOrder(String id, String productId, int quantity) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -76,17 +91,17 @@ public class OrderServiceImpl implements OrderService {
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
 
-        return order;
+        return OrderMapper.toResponse(order);
     }
 
+    @Override
     public void updateOrderStatus(String id, String status) {
-        Order order = getOrderById(id);
-        order.setStatus(status);
-        orderRepository.save(order);
-    }
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-    public void deleteOrder(String id) {
-        orderRepository.deleteById(id);
+        order.setStatus(status);
+
+        orderRepository.save(order);
     }
 }
 

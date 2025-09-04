@@ -1,20 +1,18 @@
 package com.fahmi.personalonlinestore.service;
 
-import com.fahmi.personalonlinestore.entity.Product;
+import com.fahmi.personalonlinestore.dto.request.ProductRequest;
+import com.fahmi.personalonlinestore.dto.response.ProductResponse;
 
 import java.util.List;
 
 public interface ProductService {
+    ProductResponse createProduct(ProductRequest product);
 
-    public Product createProduct(Product product, String categoryId);
+    List<ProductResponse> getAllProducts();
 
-    public List<Product> getAllProducts();
+    ProductResponse getProductById(String id);
 
-    public Product getProductById(String id);
+    ProductResponse updateProduct(String id, ProductRequest product);
 
-    public List<Product> getProductsByCategory(String categoryId);
-
-    public Product updateProduct(String id, Product product);
-
-    public void deleteProduct(String id);
+    void deleteProduct(String id);
 }

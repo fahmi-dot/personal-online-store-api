@@ -1,7 +1,8 @@
 package com.fahmi.personalonlinestore.controller;
 
 import com.fahmi.personalonlinestore.constant.Endpoint;
-import com.fahmi.personalonlinestore.entity.Order;
+import com.fahmi.personalonlinestore.dto.request.OrderRequest;
+import com.fahmi.personalonlinestore.dto.response.OrderResponse;
 import com.fahmi.personalonlinestore.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,21 +18,24 @@ public class UserController {
     private final OrderService orderService;
 
     @GetMapping("/orders")
-    public ResponseEntity<List<Order>> getMyOrders() {
-        return ResponseEntity.ok(orderService.getMyOrders());
+    public ResponseEntity<List<OrderResponse>> getMyOrders() {
+        List<OrderResponse> response = orderService.getMyOrders();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<Order> createOrder(@RequestParam String userId) {
-        return ResponseEntity.ok(orderService.createOrder(userId));
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
+        OrderResponse response = orderService.createOrder(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/orders/{id}/add-product")
-    public ResponseEntity<Order> addProductToOrder(
+    public ResponseEntity<OrderResponse> addProductToOrder(
             @PathVariable String id,
             @RequestParam String productId,
             @RequestParam int quantity) {
-        return ResponseEntity.ok(orderService.addProductToOrder(id, productId, quantity));
+        OrderResponse response = orderService.addProductToOrder(id, productId, quantity);
+        return ResponseEntity.ok(response);
     }
 }
 

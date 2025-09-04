@@ -1,20 +1,17 @@
 package com.fahmi.personalonlinestore.service;
 
-import com.fahmi.personalonlinestore.entity.Order;
+import com.fahmi.personalonlinestore.dto.request.OrderRequest;
+import com.fahmi.personalonlinestore.dto.response.OrderResponse;
 
 import java.util.List;
 
 public interface OrderService {
-    Order createOrder(String userId);
+    OrderResponse createOrder(OrderRequest request);
 
-    Order getOrderById(String id);
+    List<OrderResponse> getMyOrders();
 
-    List<Order> getMyOrders();
-
-    Order addProductToOrder(String id, String productId, int quantity);
+    OrderResponse addProductToOrder(String id, String productId, int quantity);
 
     void updateOrderStatus(String id, String status);
-
-    void deleteOrder(String id);
 }
 

@@ -1,16 +1,11 @@
 package com.fahmi.personalonlinestore.service;
 
-import com.fahmi.personalonlinestore.entity.User;
+import com.fahmi.personalonlinestore.dto.response.UserResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
-    List<User> getAllUsers();
-
-    Optional<User> getUserById(String id);
-
-    User updateUser(String id, User user);
+    List<UserResponse> getAllUsers();
 
     void deleteUser(String id);
 }

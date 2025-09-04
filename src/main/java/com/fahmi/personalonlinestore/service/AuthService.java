@@ -1,9 +1,11 @@
 package com.fahmi.personalonlinestore.service;
 
-import com.fahmi.personalonlinestore.entity.User;
+import com.fahmi.personalonlinestore.dto.request.UserLoginRequest;
+import com.fahmi.personalonlinestore.dto.request.UserRegisterRequest;
+import com.fahmi.personalonlinestore.dto.response.UserResponse;
 
 public interface AuthService {
-    void register(User user);
+    UserResponse register(UserRegisterRequest request);
 
-    String login(String email, String password);
+    String login(UserLoginRequest request);
 }

@@ -1,9 +1,11 @@
 package com.fahmi.personalonlinestore.controller;
 
 import com.fahmi.personalonlinestore.constant.Endpoint;
-import com.fahmi.personalonlinestore.entity.Category;
-import com.fahmi.personalonlinestore.entity.Product;
-import com.fahmi.personalonlinestore.entity.User;
+import com.fahmi.personalonlinestore.dto.request.CategoryRequest;
+import com.fahmi.personalonlinestore.dto.request.ProductRequest;
+import com.fahmi.personalonlinestore.dto.response.CategoryResponse;
+import com.fahmi.personalonlinestore.dto.response.ProductResponse;
+import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.service.CategoryService;
 import com.fahmi.personalonlinestore.service.OrderService;
 import com.fahmi.personalonlinestore.service.ProductService;
@@ -25,7 +27,7 @@ public class AdminController {
     private final OrderService orderService;
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
@@ -36,13 +38,13 @@ public class AdminController {
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        return ResponseEntity.ok(categoryService.createCategory(category));
+    public ResponseEntity<CategoryResponse> createCategory(@RequestBody CategoryRequest request) {
+        return ResponseEntity.ok(categoryService.createCategory(request));
     }
 
     @PutMapping("/categories/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable String id, @RequestBody Category category) {
-        return ResponseEntity.ok(categoryService.updateCategory(id, category));
+    public ResponseEntity<CategoryResponse> updateCategory(@PathVariable String id, @RequestBody CategoryRequest request) {
+        return ResponseEntity.ok(categoryService.updateCategory(id, request));
     }
 
     @DeleteMapping("/categories/{id}")
@@ -52,15 +54,13 @@ public class AdminController {
     }
 
     @PostMapping("/products/{categoryId}")
-    public ResponseEntity<Product> createProduct(
-            @PathVariable String categoryId,
-            @RequestBody Product product) {
-        return ResponseEntity.ok(productService.createProduct(product, categoryId));
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
+        return ResponseEntity.ok(productService.createProduct(request));
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable String id, @RequestBody Product product) {
-        return ResponseEntity.ok(productService.updateProduct(id, product));
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable String id, @RequestBody ProductRequest request) {
+        return ResponseEntity.ok(productService.updateProduct(id, request));
     }
 
     @DeleteMapping("/products/{id}")
