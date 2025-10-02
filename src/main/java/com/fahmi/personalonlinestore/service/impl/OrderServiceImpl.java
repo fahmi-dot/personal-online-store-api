@@ -17,6 +17,8 @@ import com.fahmi.personalonlinestore.util.TokenHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder()
                 .user(user)
                 .status("PENDING")
-                .totalPrice(0.0)
+                .totalPrice(new BigDecimal("0.0"))
                 .build();
         orderRepository.save(order);
 
@@ -74,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Stock not sufficient");
         }
 
-        double subtotal = product.getPrice() * quantity;
+        BigDecimal subtotal = product.getPrice().multiply(new BigDecimal(quantity));
 
         OrderDetail orderDetail = OrderDetail.builder()
                 .order(order)
@@ -85,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderDetailRepository.save(orderDetail);
 
-        order.setTotalPrice(order.getTotalPrice() + subtotal);
+        order.setTotalPrice(order.getTotalPrice().add(orderDetail.getSubtotal()));
         orderRepository.save(order);
 
         product.setStock(product.getStock() - quantity);

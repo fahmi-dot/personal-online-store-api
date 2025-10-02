@@ -7,10 +7,13 @@ import com.fahmi.personalonlinestore.entity.Product;
 import com.fahmi.personalonlinestore.mapper.ProductMapper;
 import com.fahmi.personalonlinestore.repository.ProductRepository;
 import com.fahmi.personalonlinestore.service.CategoryService;
+import com.fahmi.personalonlinestore.service.CloudinaryService;
 import com.fahmi.personalonlinestore.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,13 +21,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
     private final CategoryService categoryService;
+    private final CloudinaryService cloudinaryService;
+    private final ProductRepository productRepository;
 
     @Override
-    public ProductResponse createProduct(ProductRequest request) {
-        Category category = categoryService.getCategoryById(request.getCategoryId());
-        Product product = ProductMapper.fromRequest(request, category);
+    public ProductResponse createProduct(String name, String description, BigDecimal price, int stock, String categoryId, MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg") && !fileName.endsWith(".png"))) {
+            throw new RuntimeException("Only JPG/PNG files are allowed.");
+        }
+        String photoUrl = cloudinaryService.uploadFile(file, "products");
+        Category category = categoryService.getCategoryById(categoryId);
+        ProductRequest request = ProductRequest.builder()
+                .name(name)
+                .photoUrl(photoUrl)
+                .description(description)
+                .price(price)
+                .stock(stock)
+                .category(category)
+                .build();
+
+        Product product = ProductMapper.fromRequest(request);
 
         productRepository.save(product);
 

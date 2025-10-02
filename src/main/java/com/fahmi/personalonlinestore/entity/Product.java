@@ -2,6 +2,8 @@ package com.fahmi.personalonlinestore.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -18,9 +20,12 @@ public class Product {
 
     private String name;
 
+    @Column(name = "photo_url")
+    private String photoUrl;
+
     private String description;
 
-    private Double price;
+    private BigDecimal price;
 
     private Integer stock;
 

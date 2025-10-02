@@ -1,12 +1,18 @@
 package com.fahmi.personalonlinestore.dto.request;
 
+import com.fahmi.personalonlinestore.entity.Category;
+import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
+@Builder
 public class ProductRequest {
     private String name;
+    private String photoUrl;
     private String description;
-    private double price;
+    private BigDecimal price;
     private int stock;
-    private String categoryId;
+    private Category category;
 }

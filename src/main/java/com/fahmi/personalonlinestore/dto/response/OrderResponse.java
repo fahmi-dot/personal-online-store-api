@@ -2,6 +2,8 @@ package com.fahmi.personalonlinestore.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -9,7 +11,7 @@ import java.util.List;
 public class OrderResponse {
     private String id;
     private String userId;
-    private double totalPrice;
+    private BigDecimal totalPrice;
     private String status;
     private List<OrderDetailResponse> orderDetails;
 }

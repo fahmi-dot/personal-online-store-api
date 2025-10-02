@@ -3,6 +3,8 @@ package com.fahmi.personalonlinestore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "order_details")
 @Getter
@@ -15,9 +17,9 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private Integer quantity;
+    private int quantity;
 
-    private Double subtotal;
+    private BigDecimal subtotal;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

@@ -1,6 +1,5 @@
 package com.fahmi.personalonlinestore.service.impl;
 
-import com.fahmi.personalonlinestore.constant.Role;
 import com.fahmi.personalonlinestore.dto.request.UserLoginRequest;
 import com.fahmi.personalonlinestore.dto.request.UserRegisterRequest;
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
@@ -26,7 +25,6 @@ public class AuthServiceImpl implements AuthService {
         User user = UserMapper.fromRegisterRequest(request);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.USER);
         userRepository.save(user);
 
         return UserMapper.toResponse(user);

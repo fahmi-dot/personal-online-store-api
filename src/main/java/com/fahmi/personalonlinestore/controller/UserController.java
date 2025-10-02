@@ -3,7 +3,9 @@ package com.fahmi.personalonlinestore.controller;
 import com.fahmi.personalonlinestore.constant.Endpoint;
 import com.fahmi.personalonlinestore.dto.request.OrderRequest;
 import com.fahmi.personalonlinestore.dto.response.OrderResponse;
+import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.service.OrderService;
+import com.fahmi.personalonlinestore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,13 @@ import java.util.List;
 public class UserController {
 
     private final OrderService orderService;
+    private final UserService userService;
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponse> getMyProfile() {
+        UserResponse response = userService.getMyProfile();
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/orders")
     public ResponseEntity<List<OrderResponse>> getMyOrders() {
@@ -29,7 +38,12 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/orders/{id}/add-product")
+    @GetMapping("/cart")
+    public ResponseEntity<List<OrderResponse>> getMyCart() {
+
+    }
+
+    @PostMapping("/cart/add-product")
     public ResponseEntity<OrderResponse> addProductToOrder(
             @PathVariable String id,
             @RequestParam String productId,

@@ -2,19 +2,19 @@ package com.fahmi.personalonlinestore.mapper;
 
 import com.fahmi.personalonlinestore.dto.request.ProductRequest;
 import com.fahmi.personalonlinestore.dto.response.ProductResponse;
-import com.fahmi.personalonlinestore.entity.Category;
 import com.fahmi.personalonlinestore.entity.Product;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
-    public static Product fromRequest(ProductRequest request, Category category) {
+    public static Product fromRequest(ProductRequest request) {
         return Product.builder()
                 .name(request.getName())
+                .photoUrl(request.getPhotoUrl())
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .stock(request.getStock())
-                .category(category)
+                .category(request.getCategory())
                 .build();
     }
 
@@ -22,6 +22,7 @@ public class ProductMapper {
         return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
+                .photoUrl(product.getPhotoUrl())
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .stock(product.getStock())

@@ -11,9 +11,12 @@ import com.fahmi.personalonlinestore.service.OrderService;
 import com.fahmi.personalonlinestore.service.ProductService;
 import com.fahmi.personalonlinestore.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -53,9 +56,14 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/products/{categoryId}")
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
-        return ResponseEntity.ok(productService.createProduct(request));
+    @PostMapping(value = "/products", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ProductResponse> createProduct(@RequestParam String name,
+                                                         @RequestParam String description,
+                                                         @RequestParam BigDecimal price,
+                                                         @RequestParam int stock,
+                                                         @RequestParam String categoryId,
+                                                         @RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok(productService.createProduct(name, description, price, stock, categoryId, file));
     }
 
     @PutMapping("/products/{id}")
