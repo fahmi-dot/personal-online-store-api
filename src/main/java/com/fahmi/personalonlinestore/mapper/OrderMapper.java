@@ -12,14 +12,14 @@ public class OrderMapper {
         return OrderResponse.builder()
                 .id(order.getId())
                 .userId(order.getUser().getId())
-                .totalPrice(order.getTotalPrice())
-                .status(order.getStatus())
-                .orderDetails(order.getOrderDetails() != null ?
+                .total(order.getTotal())
+                .items(order.getOrderDetails() != null ?
                         order.getOrderDetails().stream()
                                 .map(OrderDetailMapper::toResponse)
                                 .collect(Collectors.toList()) :
                         null
                 )
+                .status(order.getStatus())
                 .build();
     }
 }

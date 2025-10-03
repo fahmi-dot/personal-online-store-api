@@ -7,9 +7,8 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class OrderDetailResponse {
+public class CartDetailResponse {
     private String productId;
     private int quantity;
     private BigDecimal subtotal;
 }
-

@@ -1,13 +1,16 @@
 package com.fahmi.personalonlinestore.service;
 
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
-
-import java.util.List;
+import com.fahmi.personalonlinestore.dto.response.other.PagedResponse;
+import com.fahmi.personalonlinestore.entity.User;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-    List<UserResponse> getAllUsers();
+    PagedResponse<UserResponse> getAllUsers(Pageable pageable);
 
     UserResponse getMyProfile();
 
     void deleteUser(String id);
+
+    User findUserByUsername(String username);
 }

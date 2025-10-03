@@ -1,6 +1,7 @@
 package com.fahmi.personalonlinestore.service.impl;
 
 import com.cloudinary.Cloudinary;
+import com.fahmi.personalonlinestore.exception.CustomException;
 import com.fahmi.personalonlinestore.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), Map.of("folder", folder));
             return (String) result.get("secure_url");
         } catch (IOException e) {
-            throw new RuntimeException("Upload to Cloudinary failed", e);
+            throw new CustomException.ConflictException("Failed to upload file.");
         }
     }
 }

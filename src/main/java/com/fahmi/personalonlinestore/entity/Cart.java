@@ -4,33 +4,25 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "cart")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Order {
+public class Cart {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String status;
-
     private BigDecimal total;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderDetail> orderDetails;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private List<CartDetail> cartDetails;
 }
-

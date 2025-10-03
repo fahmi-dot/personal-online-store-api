@@ -1,13 +1,13 @@
 package com.fahmi.personalonlinestore.mapper;
 
-import com.fahmi.personalonlinestore.dto.response.OrderDetailResponse;
-import com.fahmi.personalonlinestore.entity.OrderDetail;
+import com.fahmi.personalonlinestore.dto.response.CartDetailResponse;
+import com.fahmi.personalonlinestore.entity.CartDetail;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderDetailMapper {
-    public static OrderDetailResponse toResponse(OrderDetail detail) {
-        return OrderDetailResponse.builder()
+public class CartDetailMapper {
+    public static CartDetailResponse toResponse(CartDetail detail) {
+        return CartDetailResponse.builder()
                 .productId(detail.getProduct().getId())
                 .quantity(detail.getQuantity())
                 .subtotal(detail.getSubtotal())

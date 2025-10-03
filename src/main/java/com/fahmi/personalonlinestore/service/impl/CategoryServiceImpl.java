@@ -20,7 +20,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
         Category category = CategoryMapper.fromRequest(request);
-
         categoryRepository.save(category);
 
         return CategoryMapper.toResponse(category);

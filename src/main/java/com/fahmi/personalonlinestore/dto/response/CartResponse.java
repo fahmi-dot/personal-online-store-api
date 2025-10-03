@@ -8,11 +8,9 @@ import java.util.List;
 
 @Data
 @Builder
-public class OrderResponse {
+public class CartResponse {
     private String id;
     private String userId;
     private BigDecimal total;
-    private List<OrderDetailResponse> items;
-    private String status;
+    private List<CartDetailResponse> items;
 }
-
