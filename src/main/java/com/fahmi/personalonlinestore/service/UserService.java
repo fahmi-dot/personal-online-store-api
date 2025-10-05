@@ -6,7 +6,7 @@ import com.fahmi.personalonlinestore.entity.User;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-    PagedResponse<UserResponse> getAllUsers(Pageable pageable);
+    PagedResponse.WithData<UserResponse> getAllUsers(Pageable pageable);
 
     UserResponse getMyProfile();
 

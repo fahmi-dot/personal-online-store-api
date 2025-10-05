@@ -34,12 +34,13 @@ public class PublicController {
                                             @RequestParam(required = false) String search) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection.equalsIgnoreCase("asc") ?
                 Sort.Direction.ASC : Sort.Direction.DESC, sortBy));
-        PagedResponse<ProductResponse> responses = productService.getAllProducts(pageable, category, search);
+        PagedResponse.WithData<ProductResponse> responses = productService.getAllProducts(pageable, category, search);
 
-        return ResponseUtil.response(
+        return ResponseUtil.responseWithPagination(
                 HttpStatus.OK,
                 "All products retrieved successfully.",
-                responses
+                responses.getData(),
+                responses.getPagination()
         );
     }
 

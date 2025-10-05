@@ -39,6 +39,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponse createOrder(OrderRequest request) {
         String username = tokenHolder.getUsername();
+        if ("admin".equals(username)) {
+            throw new CustomException.AuthorizationException("You are the administrator.");
+        }
         User user = userService.findUserByUsername(username);
         Order order = Order.builder()
                 .user(user)
@@ -54,15 +57,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public PagedResponse<OrderResponse> getMyOrders(Pageable pageable) {
+    public PagedResponse.WithData<OrderResponse> getMyOrders(Pageable pageable) {
         String username = tokenHolder.getUsername();
+        if ("admin".equals(username)) {
+            throw new CustomException.AuthorizationException("You are the administrator.");
+        }
         User user = userService.findUserByUsername(username);
         Page<Order> orders =  orderRepository.findByUserId(pageable, user.getId());
         List<OrderResponse> orderResponses = orders.stream()
                 .map(OrderMapper::toResponse)
                 .toList();
+        PagedResponse<OrderResponse> pagedResponse = toPagedResponse(orders);
 
-        return toPagedResponse(orders, orderResponses);
+        return PagedResponse.WithData.<OrderResponse>builder()
+                .data(orderResponses)
+                .pagination(pagedResponse)
+                .build();
     }
 
     public void addProductToOrder(String id, String productId, int quantity) {
@@ -101,13 +111,14 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Order not found."));
     }
 
-    public PagedResponse<OrderResponse> toPagedResponse(Page<Order> orders, List<OrderResponse> orderResponses) {
+    public PagedResponse<OrderResponse> toPagedResponse(Page<Order> orders) {
         return PagedResponse.<OrderResponse>builder()
-                .data(orderResponses)
-                .page(orders.getNumber())
-                .size(orders.getSize())
-                .totalElements(orders.getTotalElements())
+                .currentPage(orders.getNumber())
+                .pageSize(orders.getSize())
+                .totalItems(orders.getTotalElements())
                 .totalPages(orders.getTotalPages())
+                .hasPrev(orders.hasPrevious())
+                .hasNext(orders.hasNext())
                 .build();
     }
 }

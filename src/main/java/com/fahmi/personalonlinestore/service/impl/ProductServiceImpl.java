@@ -51,13 +51,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PagedResponse<ProductResponse> getAllProducts(Pageable pageable, String category, String search) {
+    public PagedResponse.WithData<ProductResponse> getAllProducts(Pageable pageable, String category, String search) {
         Page<Product> products = productRepository.findAll(pageable);
         List<ProductResponse> productResponses = products.stream()
                 .map(ProductMapper::toResponse)
                 .toList();
+        PagedResponse<ProductResponse> pagedResponse = toPagedResponse(products);
 
-        return toPagedResponse(products, productResponses);
+        return PagedResponse.WithData.<ProductResponse>builder()
+                .data(productResponses)
+                .pagination(pagedResponse)
+                .build();
     }
 
     @Override
@@ -103,13 +107,14 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Product not found."));
     }
 
-    public PagedResponse<ProductResponse> toPagedResponse(Page<Product> products, List<ProductResponse> productResponses) {
+    public PagedResponse<ProductResponse> toPagedResponse(Page<Product> products) {
         return PagedResponse.<ProductResponse>builder()
-                .data(productResponses)
-                .page(products.getNumber())
-                .size(products.getSize())
-                .totalElements(products.getTotalElements())
+                .currentPage(products.getNumber())
+                .pageSize(products.getSize())
+                .totalItems(products.getTotalElements())
                 .totalPages(products.getTotalPages())
+                .hasPrev(products.hasPrevious())
+                .hasNext(products.hasNext())
                 .build();
     }
 }

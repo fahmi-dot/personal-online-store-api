@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public interface ProductService {
     ProductResponse createProduct(String name, String description, BigDecimal price, int stock, String categoryId, MultipartFile file);
 
-    PagedResponse<ProductResponse> getAllProducts(Pageable pageable, String category, String search);
+    PagedResponse.WithData<ProductResponse> getAllProducts(Pageable pageable, String category, String search);
 
     ProductResponse getProductById(String id);
 

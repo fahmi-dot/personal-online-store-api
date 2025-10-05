@@ -3,6 +3,7 @@ package com.fahmi.personalonlinestore.service.impl;
 import com.fahmi.personalonlinestore.dto.request.CartDetailRequest;
 import com.fahmi.personalonlinestore.dto.response.CartResponse;
 import com.fahmi.personalonlinestore.entity.*;
+import com.fahmi.personalonlinestore.exception.CustomException;
 import com.fahmi.personalonlinestore.mapper.CartMapper;
 import com.fahmi.personalonlinestore.repository.CartDetailRepository;
 import com.fahmi.personalonlinestore.repository.CartRepository;
@@ -29,6 +30,9 @@ public class CartServiceImpl implements CartService {
     @Override
     public void addProductToCart(CartDetailRequest request) {
         String username = tokenHolder.getUsername();
+        if ("admin".equals(username)) {
+            throw new CustomException.AuthorizationException("You are the administrator.");
+        }
         User user = userService.findUserByUsername(username);
         Cart cart = getOrCreateCart(user);
         Product product = productService.findProductById(request.getProductId());
@@ -51,6 +55,9 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponse getMyCart() {
         String username = tokenHolder.getUsername();
+        if ("admin".equals(username)) {
+            throw new CustomException.AuthorizationException("You are the administrator.");
+        }
         User user = userService.findUserByUsername(username);
         Cart cart = getOrCreateCart(user);
 

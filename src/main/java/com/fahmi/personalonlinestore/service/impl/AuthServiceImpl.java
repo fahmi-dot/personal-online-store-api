@@ -2,6 +2,7 @@ package com.fahmi.personalonlinestore.service.impl;
 
 import com.fahmi.personalonlinestore.dto.request.UserLoginRequest;
 import com.fahmi.personalonlinestore.dto.request.UserRegisterRequest;
+import com.fahmi.personalonlinestore.dto.response.UserLoginResponse;
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.entity.User;
 import com.fahmi.personalonlinestore.exception.CustomException;
@@ -29,9 +30,7 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomException.ConflictException("Email already in use.");
         }
-
         User user = UserMapper.fromRegisterRequest(request);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
@@ -39,23 +38,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(UserLoginRequest request) {
-        if (request.getUsernameOrEmail() == null || request.getUsernameOrEmail().isEmpty() ||
+    public UserLoginResponse login(UserLoginRequest request) {
+        if (request.getEmailOrUsername() == null || request.getEmailOrUsername().isEmpty() ||
                 request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new CustomException.BadRequestException("Username or email and password is required.");
         }
         User user;
-        if (request.getUsernameOrEmail().split("@").length != 2) {
-            user = userRepository.findByUsername(request.getUsernameOrEmail())
+        if (request.getEmailOrUsername().split("@").length != 2) {
+            user = userRepository.findByUsername(request.getEmailOrUsername())
                     .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
         } else {
-            user = userRepository.findByEmail(request.getUsernameOrEmail())
+            user = userRepository.findByEmail(request.getEmailOrUsername())
                     .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
         }
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException.AuthenticationException("Email or password is incorrect.");
         }
+        String token = jwtUtil.generateToken(user);
 
-        return jwtUtil.generateToken(user);
+        return UserLoginResponse.builder().token(token).build();
     }
 }

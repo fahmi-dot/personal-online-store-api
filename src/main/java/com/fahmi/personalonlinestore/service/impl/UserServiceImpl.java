@@ -23,13 +23,17 @@ public class UserServiceImpl implements UserService {
     private final TokenHolder tokenHolder;
 
     @Override
-    public PagedResponse<UserResponse> getAllUsers(Pageable pageable) {
+    public PagedResponse.WithData<UserResponse> getAllUsers(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
         List<UserResponse> userResponses = users.stream()
                 .map(UserMapper::toResponse)
                 .toList();
+        PagedResponse<UserResponse> pagedResponse = toPagedResponse(users);
 
-        return toPagedResponse(users, userResponses);
+        return PagedResponse.WithData.<UserResponse>builder()
+                .data(userResponses)
+                .pagination(pagedResponse)
+                .build();
     }
 
     @Override
@@ -57,13 +61,14 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("User not found."));
     }
 
-    public PagedResponse<UserResponse> toPagedResponse(Page<User> users, List<UserResponse> userResponses) {
+    public PagedResponse<UserResponse> toPagedResponse(Page<User> users) {
         return PagedResponse.<UserResponse>builder()
-                .data(userResponses)
-                .page(users.getNumber())
-                .size(users.getSize())
-                .totalElements(users.getTotalElements())
+                .currentPage(users.getNumber())
+                .pageSize(users.getSize())
+                .totalItems(users.getTotalElements())
                 .totalPages(users.getTotalPages())
+                .hasPrev(users.hasPrevious())
+                .hasNext(users.hasNext())
                 .build();
     }
 }

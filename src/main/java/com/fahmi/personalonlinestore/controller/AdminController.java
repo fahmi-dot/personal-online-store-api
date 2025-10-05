@@ -37,16 +37,17 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(@RequestParam(required = false, defaultValue = "0") int page,
                                          @RequestParam(required = false, defaultValue = "10") int size,
-                                         @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                                         @RequestParam(required = false, defaultValue = "username") String sortBy,
                                          @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection.equalsIgnoreCase("asc") ?
                 Sort.Direction.ASC : Sort.Direction.DESC, sortBy));
-        PagedResponse<UserResponse> responses = userService.getAllUsers(pageable);
+        PagedResponse.WithData<UserResponse> responses = userService.getAllUsers(pageable);
 
-        return ResponseUtil.response(
+        return ResponseUtil.responseWithPagination(
                 HttpStatus.OK,
                 "All users retrieved successfully.",
-                responses
+                responses.getData(),
+                responses.getPagination()
         );
     }
 

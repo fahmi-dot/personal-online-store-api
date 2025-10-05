@@ -3,6 +3,7 @@ package com.fahmi.personalonlinestore.controller;
 import com.fahmi.personalonlinestore.constant.Endpoint;
 import com.fahmi.personalonlinestore.dto.request.UserLoginRequest;
 import com.fahmi.personalonlinestore.dto.request.UserRegisterRequest;
+import com.fahmi.personalonlinestore.dto.response.UserLoginResponse;
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.service.AuthService;
 import com.fahmi.personalonlinestore.util.ResponseUtil;
@@ -31,8 +32,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginRequest request) {
-        String response = authService.login(request);
+        UserLoginResponse response = authService.login(request);
 
-        return ResponseEntity.ok(response);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "User logged in successfully.",
+                response
+        );
     }
 }

@@ -9,4 +9,5 @@ public class CommonResponse<T> {
     private String message;
     private int statusCode;
     private T data;
+    private PagedResponse pagination;
 }

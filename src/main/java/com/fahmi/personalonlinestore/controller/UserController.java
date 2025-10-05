@@ -46,12 +46,13 @@ public class UserController {
                                          @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection.equalsIgnoreCase("asc") ?
                 Sort.Direction.ASC : Sort.Direction.DESC, sortBy));
-        PagedResponse<OrderResponse> responses = orderService.getMyOrders(pageable);
+        PagedResponse.WithData<OrderResponse> responses = orderService.getMyOrders(pageable);
 
-        return ResponseUtil.response(
+        return ResponseUtil.responseWithPagination(
                 HttpStatus.OK,
                 "All my orders retrieved successfully.",
-                responses
+                responses.getData(),
+                responses.getPagination()
         );
     }
 
