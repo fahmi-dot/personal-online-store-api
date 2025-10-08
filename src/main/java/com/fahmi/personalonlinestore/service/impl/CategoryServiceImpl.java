@@ -33,9 +33,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryById(String id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+    public CategoryResponse getCategoryById(String id) {
+        Category category = findCategory(id);
+
+        return CategoryMapper.toResponse(category);
+    }
+
+    @Override
+    public Category findCategoryById(String id) {
+        return findCategory(id);
     }
 
     @Override
@@ -43,13 +49,19 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id).map(c -> {
             c.setName(request.getName());
             return categoryRepository.save(c);
-        }).orElseThrow(() -> new RuntimeException("Category not found"));
+        }).orElseThrow(() -> new RuntimeException("Category not found."));
 
         return CategoryMapper.toResponse(category);
     }
 
     @Override
     public void deleteCategory(String id) {
-        categoryRepository.deleteById(id);
+        Category category = findCategory(id);
+        categoryRepository.delete(category);
+    }
+
+    public Category findCategory(String id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found."));
     }
 }

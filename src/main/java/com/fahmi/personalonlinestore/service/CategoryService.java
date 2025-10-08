@@ -11,10 +11,12 @@ public interface CategoryService {
 
     List<CategoryResponse> getAllCategories();
 
-    Category getCategoryById(String id);
+    CategoryResponse getCategoryById(String id);
 
     CategoryResponse updateCategory(String id, CategoryRequest request);
 
     void deleteCategory(String id);
+
+    Category findCategoryById(String id);
 }
 

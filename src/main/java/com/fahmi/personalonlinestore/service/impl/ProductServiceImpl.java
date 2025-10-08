@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
             throw new CustomException.BadRequestException("Only JPG/PNG files are allowed.");
         }
         String photoUrl = cloudinaryService.uploadFile(file, "products");
-        Category category = categoryService.getCategoryById(categoryId);
+        Category category = categoryService.findCategoryById(categoryId);
         ProductRequest request = ProductRequest.builder()
                 .name(name)
                 .photoUrl(photoUrl)
@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse updateProduct(String id, ProductRequest request) {
-        Category category = categoryService.getCategoryById(id);
+        Category category = categoryService.findCategoryById(id);
         Product product = findProduct(id);
 
         product.setName(request.getName());

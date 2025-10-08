@@ -27,7 +27,7 @@ public class PublicController {
 
     @GetMapping("/products")
     public ResponseEntity<?> getAllProducts(@RequestParam(required = false, defaultValue = "0") int page,
-                                            @RequestParam(required = false, defaultValue = "10") int size,
+                                            @RequestParam(required = false, defaultValue = "24") int size,
                                             @RequestParam(required = false, defaultValue = "name") String sortBy,
                                             @RequestParam(required = false, defaultValue = "asc") String sortDirection,
                                             @RequestParam(required = false) String category,
@@ -63,6 +63,17 @@ public class PublicController {
                 HttpStatus.OK,
                 "All categories retrieved successfully.",
                 responses
+        );
+    }
+
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<?> getCategoryById(@PathVariable String id) {
+        CategoryResponse response = categoryService.getCategoryById(id);
+
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Category retrieved successfully.",
+                response
         );
     }
 }
