@@ -1,8 +1,10 @@
 package com.fahmi.personalonlinestore.controller;
 
 import com.fahmi.personalonlinestore.constant.Endpoint;
+import com.fahmi.personalonlinestore.dto.request.RefreshTokenRequest;
 import com.fahmi.personalonlinestore.dto.request.UserLoginRequest;
 import com.fahmi.personalonlinestore.dto.request.UserRegisterRequest;
+import com.fahmi.personalonlinestore.dto.response.RefreshTokenResponse;
 import com.fahmi.personalonlinestore.dto.response.UserLoginResponse;
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.service.AuthService;
@@ -37,6 +39,17 @@ public class AuthController {
         return ResponseUtil.response(
                 HttpStatus.OK,
                 "User logged in successfully.",
+                response
+        );
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
+        RefreshTokenResponse response = authService.refreshToken(request);
+
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Refresh token successfully.",
                 response
         );
     }

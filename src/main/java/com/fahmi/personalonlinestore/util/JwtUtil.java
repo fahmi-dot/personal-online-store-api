@@ -17,14 +17,25 @@ public class JwtUtil {
 
     private final JwtConfig jwtConfig;
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
         return JWT.create()
                 .withSubject(user.getUsername())
                 .withClaim("role", user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExpirationMs()))
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getAccessExpirationMs()))
+                .sign(Algorithm.HMAC256(jwtConfig.getSecretKey()));
+    }
+
+    public String generateRefreshToken(User user) {
+        return JWT.create()
+                .withSubject(user.getUsername())
+                .withClaim("role", user.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getRefreshExpirationMs()))
                 .sign(Algorithm.HMAC256(jwtConfig.getSecretKey()));
     }
 

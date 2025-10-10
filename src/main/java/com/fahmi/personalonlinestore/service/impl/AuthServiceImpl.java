@@ -1,7 +1,9 @@
 package com.fahmi.personalonlinestore.service.impl;
 
+import com.fahmi.personalonlinestore.dto.request.RefreshTokenRequest;
 import com.fahmi.personalonlinestore.dto.request.UserLoginRequest;
 import com.fahmi.personalonlinestore.dto.request.UserRegisterRequest;
+import com.fahmi.personalonlinestore.dto.response.RefreshTokenResponse;
 import com.fahmi.personalonlinestore.dto.response.UserLoginResponse;
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.entity.User;
@@ -9,6 +11,7 @@ import com.fahmi.personalonlinestore.exception.CustomException;
 import com.fahmi.personalonlinestore.mapper.UserMapper;
 import com.fahmi.personalonlinestore.repository.UserRepository;
 import com.fahmi.personalonlinestore.service.AuthService;
+import com.fahmi.personalonlinestore.service.UserService;
 import com.fahmi.personalonlinestore.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -54,8 +58,21 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException.AuthenticationException("Email or password is incorrect.");
         }
-        String token = jwtUtil.generateToken(user);
+        String accessToken = jwtUtil.generateAccessToken(user);
+        String refreshToken = jwtUtil.generateRefreshToken(user);
 
-        return UserLoginResponse.builder().token(token).build();
+        return UserLoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    @Override
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+        String username = jwtUtil.extractUsername(request.getRefreshToken());
+        User user = userService.findUserByUsername(username);
+        String accessToken = jwtUtil.generateAccessToken(user);
+
+        return RefreshTokenResponse.builder().accessToken(accessToken).build();
     }
 }

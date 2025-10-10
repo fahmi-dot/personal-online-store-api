@@ -9,13 +9,15 @@ import org.springframework.context.annotation.Configuration;
 public class JwtConfig {
 
     private String secretKey;
-    private long expirationMs;
+    private long accessExpirationMs;
+    private long refreshExpirationMs;
 
     public JwtConfig() {
         Dotenv dotenv = Dotenv.load();
 
         this.secretKey = dotenv.get("JWT_SECRET_KEY");
-        this.expirationMs = Long.parseLong(dotenv.get("JWT_EXPIRATION_MS"));
+        this.accessExpirationMs = Long.parseLong(dotenv.get("JWT_ACCESS_EXPIRATION_MS"));
+        this.refreshExpirationMs = Long.parseLong(dotenv.get("JWT_REFRESH_EXPIRATION_MS"));
     }
 }
 
