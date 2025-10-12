@@ -38,6 +38,8 @@ public class CartServiceImpl implements CartService {
         Product product = productService.findProductById(request.getProductId());
         BigDecimal subtotal = product.getPrice().multiply(new BigDecimal(request.getQuantity()));
         CartDetail cartDetail = CartDetail.builder()
+                .variant(request.getVariant())
+                .size(request.getSize())
                 .quantity(request.getQuantity())
                 .subtotal(subtotal)
                 .cart(cart)

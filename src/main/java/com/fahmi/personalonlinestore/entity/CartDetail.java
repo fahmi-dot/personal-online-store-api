@@ -17,6 +17,10 @@ public class CartDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    private String variant;
+
+    private String size;
+
     private int quantity;
 
     private BigDecimal subtotal;
