@@ -88,5 +88,51 @@ public class UserController {
                 null
         );
     }
+
+    @PutMapping("/cart/{detailId}")
+    public ResponseEntity<?> updateCartDetail(
+            @PathVariable String detailId,
+            @RequestParam int quantity) {
+        cartService.updateCartDetail(detailId, quantity);
+
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Cart item updated successfully.",
+                null
+        );
+    }
+
+    @DeleteMapping("/cart/{detailId}")
+    public ResponseEntity<?> deleteCartDetail(@PathVariable String detailId) {
+        cartService.deleteCartDetail(detailId);
+
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Cart item deleted successfully.",
+                null
+        );
+    }
+
+    @DeleteMapping("/cart")
+    public ResponseEntity<?> clearCart() {
+        cartService.clearCart();
+
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Cart cleared successfully.",
+                null
+        );
+    }
+
+    @PutMapping("/orders/{id}/cancel")
+    public ResponseEntity<?> cancelOrder(@PathVariable String id) {
+        orderService.cancelOrder(id);
+
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Order cancelled successfully.",
+                null
+        );
+    }
 }
 

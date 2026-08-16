@@ -4,6 +4,7 @@ import com.fahmi.personalonlinestore.dto.request.OrderDetailRequest;
 import com.fahmi.personalonlinestore.dto.request.OrderRequest;
 import com.fahmi.personalonlinestore.dto.response.OrderResponse;
 import com.fahmi.personalonlinestore.dto.response.other.PagedResponse;
+import com.fahmi.personalonlinestore.dto.response.other.PagedResponse.WithData;
 import com.fahmi.personalonlinestore.entity.Order;
 import com.fahmi.personalonlinestore.entity.OrderDetail;
 import com.fahmi.personalonlinestore.entity.Product;
@@ -12,6 +13,7 @@ import com.fahmi.personalonlinestore.exception.CustomException;
 import com.fahmi.personalonlinestore.mapper.OrderMapper;
 import com.fahmi.personalonlinestore.repository.OrderDetailRepository;
 import com.fahmi.personalonlinestore.repository.OrderRepository;
+import com.fahmi.personalonlinestore.service.CartService;
 import com.fahmi.personalonlinestore.service.OrderService;
 import com.fahmi.personalonlinestore.service.ProductService;
 import com.fahmi.personalonlinestore.service.UserService;
@@ -33,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final ProductService productService;
     private final UserService userService;
+    private final CartService cartService;
     private final TokenHolder tokenHolder;
 
     @Override
@@ -42,15 +45,26 @@ public class OrderServiceImpl implements OrderService {
         if ("admin".equals(username)) {
             throw new CustomException.AuthorizationException("You are the administrator.");
         }
+        if (request.getItem() == null || request.getItem().isEmpty()) {
+            throw new CustomException.BadRequestException("Order must contain at least one item.");
+        }
         User user = userService.findUserByUsername(username);
         Order order = Order.builder()
                 .user(user)
                 .status("PENDING")
                 .total(new BigDecimal("0.0"))
+                .createdAt(java.time.LocalDateTime.now())
                 .build();
         orderRepository.save(order);
         for (OrderDetailRequest item : request.getItem()) {
             addProductToOrder(order.getId(), item.getProductId(), item.getQuantity());
+        }
+
+        // Kosongkan keranjang setelah order berhasil dibuat
+        try {
+            cartService.clearCart();
+        } catch (Exception e) {
+            // Ignore if cart is already empty
         }
 
         return OrderMapper.toResponse(order);
@@ -106,6 +120,36 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
     }
 
+    @Override
+    @Transactional
+    public void cancelOrder(String id) {
+        String username = tokenHolder.getUsername();
+        User user = userService.findUserByUsername(username);
+        Order order = findOrder(id);
+
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new CustomException.AuthorizationException("You are not authorized to cancel this order.");
+        }
+
+        if (!"PENDING".equalsIgnoreCase(order.getStatus())) {
+            throw new CustomException.ConflictException("Only orders with PENDING status can be cancelled.");
+        }
+
+        // Kembalikan stok produk
+        if (order.getOrderDetails() != null) {
+            for (OrderDetail detail : order.getOrderDetails()) {
+                Product product = detail.getProduct();
+                if (product != null) {
+                    product.setStock(product.getStock() + detail.getQuantity());
+                    productService.saveProduct(product);
+                }
+            }
+        }
+
+        order.setStatus("CANCELLED");
+        orderRepository.save(order);
+    }
+
     public Order findOrder(String id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new CustomException.ResourceNotFoundException("Order not found."));
@@ -120,6 +164,11 @@ public class OrderServiceImpl implements OrderService {
                 .hasPrev(orders.hasPrevious())
                 .hasNext(orders.hasNext())
                 .build();
+    }
+
+    @Override
+    public WithData<OrderResponse> getAllOrders(Pageable pageable) {
+        throw new UnsupportedOperationException("Unimplemented method 'getAllOrders'");
     }
 }
 

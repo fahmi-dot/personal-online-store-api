@@ -10,6 +10,10 @@ public interface OrderService {
 
     PagedResponse.WithData<OrderResponse> getMyOrders(Pageable pageable);
 
+    PagedResponse.WithData<OrderResponse> getAllOrders(Pageable pageable);
+
     void updateOrderStatus(String id, String status);
+
+    void cancelOrder(String id);
 }
 

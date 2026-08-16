@@ -10,8 +10,13 @@ import java.math.BigDecimal;
 public class CartDetailResponse {
     private String id;
     private String productId;
+    private String productName;
+    private String photoUrl;
+    private BigDecimal price;
+    private int stock;
     private String variant;
     private String size;
     private int quantity;
     private BigDecimal subtotal;
 }
+

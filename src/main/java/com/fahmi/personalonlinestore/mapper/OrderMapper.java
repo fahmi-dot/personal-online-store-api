@@ -20,6 +20,7 @@ public class OrderMapper {
                         null
                 )
                 .status(order.getStatus())
+                .createdAt(order.getCreatedAt())
                 .build();
     }
 }

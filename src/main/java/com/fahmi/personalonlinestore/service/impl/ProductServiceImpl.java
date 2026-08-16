@@ -83,14 +83,31 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse updateProduct(String id, ProductRequest request) {
-        Category category = categoryService.findCategoryById(id);
         Product product = findProduct(id);
 
-        product.setName(request.getName());
-        product.setDescription(request.getDescription());
-        product.setPrice(request.getPrice());
-        product.setStock(request.getStock());
-        product.setCategory(category);
+        if (request.getCategoryId() != null && !request.getCategoryId().isBlank()) {
+            Category category = categoryService.findCategoryById(request.getCategoryId());
+            product.setCategory(category);
+        } else if (request.getCategory() != null) {
+            product.setCategory(request.getCategory());
+        }
+
+        if (request.getName() != null && !request.getName().isBlank()) {
+            product.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            product.setDescription(request.getDescription());
+        }
+        if (request.getPrice() != null) {
+            product.setPrice(request.getPrice());
+        }
+        if (request.getStock() >= 0) {
+            product.setStock(request.getStock());
+        }
+        if (request.getPhotoUrl() != null && !request.getPhotoUrl().isBlank()) {
+            product.setPhotoUrl(request.getPhotoUrl());
+        }
+
         productRepository.save(product);
 
         return ProductMapper.toResponse(product);

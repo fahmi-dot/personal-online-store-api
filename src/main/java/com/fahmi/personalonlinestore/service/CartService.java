@@ -7,4 +7,10 @@ public interface CartService {
     void addProductToCart(CartDetailRequest request);
 
     CartResponse getMyCart();
+
+    void updateCartDetail(String detailId, int quantity);
+
+    void deleteCartDetail(String detailId);
+
+    void clearCart();
 }
