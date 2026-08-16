@@ -89,6 +89,20 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    @Override
+    public PagedResponse.WithData<OrderResponse> getAllOrders(Pageable pageable) {
+        Page<Order> orders = orderRepository.findAll(pageable);
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(OrderMapper::toResponse)
+                .toList();
+        PagedResponse<OrderResponse> pagedResponse = toPagedResponse(orders);
+
+        return PagedResponse.WithData.<OrderResponse>builder()
+                .data(orderResponses)
+                .pagination(pagedResponse)
+                .build();
+    }
+
     public void addProductToOrder(String id, String productId, int quantity) {
         Order order = findOrder(id);
         Product product = productService.findProductById(productId);

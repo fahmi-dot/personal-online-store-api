@@ -4,6 +4,7 @@ import com.fahmi.personalonlinestore.constant.Endpoint;
 import com.fahmi.personalonlinestore.dto.request.CategoryRequest;
 import com.fahmi.personalonlinestore.dto.request.ProductRequest;
 import com.fahmi.personalonlinestore.dto.response.CategoryResponse;
+import com.fahmi.personalonlinestore.dto.response.OrderResponse;
 import com.fahmi.personalonlinestore.dto.response.ProductResponse;
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.dto.response.other.PagedResponse;
@@ -143,6 +144,24 @@ public class AdminController {
                 HttpStatus.OK,
                 "Order status updated successfully.",
                 null
+        );
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<?> getAllOrders(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "20") int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+            @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection.equalsIgnoreCase("asc") ?
+                Sort.Direction.ASC : Sort.Direction.DESC, sortBy));
+        PagedResponse.WithData<OrderResponse> responses = orderService.getAllOrders(pageable);
+
+        return ResponseUtil.responseWithPagination(
+                HttpStatus.OK,
+                "All orders retrieved successfully.",
+                responses.getData(),
+                responses.getPagination()
         );
     }
 }
