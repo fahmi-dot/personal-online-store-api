@@ -4,7 +4,6 @@ import com.fahmi.personalonlinestore.dto.request.OrderDetailRequest;
 import com.fahmi.personalonlinestore.dto.request.OrderRequest;
 import com.fahmi.personalonlinestore.dto.response.OrderResponse;
 import com.fahmi.personalonlinestore.dto.response.other.PagedResponse;
-import com.fahmi.personalonlinestore.dto.response.other.PagedResponse.WithData;
 import com.fahmi.personalonlinestore.entity.Order;
 import com.fahmi.personalonlinestore.entity.OrderDetail;
 import com.fahmi.personalonlinestore.entity.Product;
@@ -178,11 +177,6 @@ public class OrderServiceImpl implements OrderService {
                 .hasPrev(orders.hasPrevious())
                 .hasNext(orders.hasNext())
                 .build();
-    }
-
-    @Override
-    public WithData<OrderResponse> getAllOrders(Pageable pageable) {
-        throw new UnsupportedOperationException("Unimplemented method 'getAllOrders'");
     }
 }
 

@@ -7,6 +7,7 @@ import com.fahmi.personalonlinestore.dto.response.CartResponse;
 import com.fahmi.personalonlinestore.dto.response.OrderResponse;
 import com.fahmi.personalonlinestore.dto.response.UserResponse;
 import com.fahmi.personalonlinestore.dto.response.other.PagedResponse;
+import com.fahmi.personalonlinestore.service.AddressService;
 import com.fahmi.personalonlinestore.service.CartService;
 import com.fahmi.personalonlinestore.service.OrderService;
 import com.fahmi.personalonlinestore.service.UserService;
@@ -27,6 +28,58 @@ public class UserController {
     private final CartService cartService;
     private final OrderService orderService;
     private final UserService userService;
+    private final AddressService addressService;
+
+    @GetMapping("/addresses")
+    public ResponseEntity<?> getMyAddresses() {
+        var addresses = addressService.getMyAddresses();
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Shipping addresses retrieved successfully.",
+                addresses
+        );
+    }
+
+    @PostMapping("/addresses")
+    public ResponseEntity<?> createAddress(@RequestBody com.fahmi.personalonlinestore.dto.request.AddressRequest request) {
+        var address = addressService.createAddress(request);
+        return ResponseUtil.response(
+                HttpStatus.CREATED,
+                "Shipping address created successfully.",
+                address
+        );
+    }
+
+    @PutMapping("/addresses/{id}")
+    public ResponseEntity<?> updateAddress(@PathVariable String id,
+                                          @RequestBody com.fahmi.personalonlinestore.dto.request.AddressRequest request) {
+        var address = addressService.updateAddress(id, request);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Shipping address updated successfully.",
+                address
+        );
+    }
+
+    @PutMapping("/addresses/{id}/primary")
+    public ResponseEntity<?> setPrimaryAddress(@PathVariable String id) {
+        var address = addressService.setPrimaryAddress(id);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Primary shipping address updated successfully.",
+                address
+        );
+    }
+
+    @DeleteMapping("/addresses/{id}")
+    public ResponseEntity<?> deleteAddress(@PathVariable String id) {
+        addressService.deleteAddress(id);
+        return ResponseUtil.response(
+                HttpStatus.OK,
+                "Shipping address deleted successfully.",
+                null
+        );
+    }
 
     @GetMapping("/profile")
     public ResponseEntity<?> getMyProfile() {
